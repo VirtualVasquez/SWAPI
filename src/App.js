@@ -27,9 +27,9 @@ class App extends React.Component{
       api:"https://swapi.dev/api/people/?page=1",
       error: "These aren't the droids you're looking for. Or anyone you are looking for, really. Try again."
     }
-    this.getPlanets = this.getPlanets.bind(this);
+    this.getPlanet = this.getPlanet.bind(this);
     this.getSpecies = this.getSpecies.bind(this);
-    this.getOtherData = this.getOtherData.bind(this);
+    this.setHomeWorldAndSpecies = this.setHomeWorldAndSpecies.bind(this);
     this.getAPI = this.getAPI.bind(this);
     this.userSearch = this.userSearch.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -55,36 +55,37 @@ class App extends React.Component{
     this.getAPI(query);
   }
 
-  getPlanets = async(character) =>{
+  getPlanet = async(character) =>{
     // const planet = String(character.homeworld).replace("http", "https");
     const planet = String(character.homeworld);
     const response = await axios.get(planet);
-    character.homeworld = response.data.name
+    return response.data.name
   }
   getSpecies = async (character) =>{
     if(character.species.length === 0){
-      character.species = "Human";
+      return "Human";
     } else {
       //const response = await axios.get(String(character.species).replace("http", "https"));
       const response = await axios.get(String(character.species));
-      character.species = response.data.name
+      return response.data.name
     }
   }
-  getOtherData = async (characters) => {
+  setHomeWorldAndSpecies = async (characters) => {
     if (characters.length === 0){
       this.setState({results:[]})
     }
     for (const character of characters) {
-      await this.getPlanets(character);
-      await this.getSpecies(character);
-      this.setState({
-        results:[...characters]
-      })
+      character.homeworld = await this.getPlanet(character);
+      character.species = await this.getSpecies(character);
+
     }
+    this.setState({
+      results:[...characters]
+    })
   }
   getAPI = (url) => {
     axios.get(url)
-    .then((response) => this.getOtherData(response.data.results))
+    .then((response) => this.setHomeWorldAndSpecies(response.data.results))
   }
 
   prevPage = () =>{

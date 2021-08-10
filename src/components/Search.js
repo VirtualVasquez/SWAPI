@@ -26,7 +26,7 @@ const Search = props => {
                 name="name"
                 className="form-control" 
                 placeholder="May the force be with you" aria-label="Example text with button addon" aria-describedby="button-addon1"
-                // value={props.search}
+                value={props.value}
                 onChange={props.handleChange}
               >  
               </input>

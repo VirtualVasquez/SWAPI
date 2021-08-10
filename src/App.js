@@ -30,11 +30,15 @@ class App extends React.Component{
     this.getPlanet = this.getPlanet.bind(this);
     this.getSpecies = this.getSpecies.bind(this);
     this.setHomeWorldAndSpecies = this.setHomeWorldAndSpecies.bind(this);
-    this.getAPI = this.getAPI.bind(this);
+    this.getCharacters = this.getCharacters.bind(this);
     this.userSearch = this.userSearch.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.clearSearch = this.clearSearch.bind(this);
 
+  }
+  
+  componentDidMount() {
+    this.getCharacters(this.state.api)
   }
 
   handleChange(event){
@@ -47,12 +51,12 @@ class App extends React.Component{
       currentIndex: 0,
     })
     if(this.state.api !== "https://swapi.dev/api/people/?page=1" || this.state.results.length === 0)
-    this.getAPI(this.state.api);
+    this.getCharacters(this.state.api);
   }
 
   userSearch(){
     let query = "https://swapi.dev/api/people/?search=" + this.state.search
-    this.getAPI(query);
+    this.getCharacters(query);
   }
 
   getPlanet = async(character) =>{
@@ -83,7 +87,7 @@ class App extends React.Component{
       results:[...characters]
     })
   }
-  getAPI = (url) => {
+  getCharacters = (url) => {
     axios.get(url)
     .then((response) => this.setHomeWorldAndSpecies(response.data.results))
   }
@@ -93,7 +97,7 @@ class App extends React.Component{
       this.setState({
         currentIndex: this.state.currentIndex - 1
       })
-      this.getAPI(this.state.peopleCall[this.state.currentIndex])
+      this.getCharacters(this.state.peopleCall[this.state.currentIndex])
     }
   }
 
@@ -101,7 +105,7 @@ class App extends React.Component{
      this.setState({
        currentIndex: number
      })
-     this.getAPI(url)
+     this.getCharacters(url)
   }
 
   nextPage = (number) =>{
@@ -109,13 +113,8 @@ class App extends React.Component{
       this.setState({
         currentIndex: this.state.currentIndex + 1
       })
-      this.getAPI(this.state.peopleCall[this.state.currentIndex])
+      this.getCharacters(this.state.peopleCall[this.state.currentIndex])
     }
-  }
-
-  
-  componentDidMount() {
-    this.getAPI(this.state.api)
   }
 
   render(){

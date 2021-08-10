@@ -12,6 +12,7 @@ class App extends React.Component{
     this.state = {
       search:'',
       results:["placeholder"],
+      currentPage: 1,
       currentIndex: 0,
       peopleCall:[
         'https://swapi.dev/api/people/?page=1',
@@ -46,12 +47,9 @@ class App extends React.Component{
   }
   clearSearch(){
     this.setState({
-      search:'',
-      api:"https://swapi.dev/api/people/?page=1",
-      currentIndex: 0,
+      search:''
     })
-    if(this.state.api !== "https://swapi.dev/api/people/?page=1" || this.state.results.length === 0)
-    this.getCharacters(this.state.api);
+
   }
 
   userSearch(){
@@ -92,29 +90,22 @@ class App extends React.Component{
     .then((response) => this.setHomeWorldAndSpecies(response.data.results))
   }
 
-  prevPage = () =>{
-    if(this.state.currentIndex > 0 && this.state.results.length > 0){
-      this.setState({
-        currentIndex: this.state.currentIndex - 1
-      })
-      this.getCharacters(this.state.peopleCall[this.state.currentIndex])
-    }
+  prevPage = (pageNum) =>{
+    if(pageNum < 1) return;
+    this.setState({currentPage:pageNum});
+    this.getCharacters(`https://swapi.dev/api/people/?page=${pageNum}`)
   }
 
-  pageSelect = (url, number) => {
-     this.setState({
-       currentIndex: number
-     })
-     this.getCharacters(url)
+  pageSelect = (pageNum) => {
+    this.setState({currentPage:pageNum});
+    this.getCharacters(`https://swapi.dev/api/people/?page=${pageNum}`)
   }
 
-  nextPage = (number) =>{
-    if(this.state.currentIndex < 8 && this.state.results.length > 0){
-      this.setState({
-        currentIndex: this.state.currentIndex + 1
-      })
-      this.getCharacters(this.state.peopleCall[this.state.currentIndex])
-    }
+  nextPage = (pageNum) =>{
+    if(pageNum > 9) return;
+    this.setState({currentPage:pageNum});
+    this.getCharacters(`https://swapi.dev/api/people/?page=${pageNum}`)
+
   }
 
   render(){
@@ -133,9 +124,8 @@ class App extends React.Component{
         />          
         <p>{this.state.results.length === 0  ? this.state.error : ''}</p>
         <Pagination 
+          currentPage = {this.state.currentPage}
           prevPage = {this.prevPage}
-          results = {this.state.results}
-          peopleCall = {this.state.peopleCall}
           pageSelect = {this.pageSelect}
           nextPage = {this.nextPage}
         />
